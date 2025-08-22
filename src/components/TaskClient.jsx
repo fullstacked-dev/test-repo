@@ -58,6 +58,19 @@ const TaskClient = () => {
       )
     )
   }
+
+  const filteredTasks = taskList.filter((task) => {
+    if (filter === "all") return true
+    if (filter === "completed") return task.isComplete
+    if (filter === "active") return !task.isComplete
+  })
+
+  let emptyMessage = ""
+  if (filteredTasks.length === 0) {
+    if (filter === "all") emptyMessage = "No tasks yet. Add some!"
+    else if (filter === "completed") emptyMessage = "No completed tasks yet."
+    else if (filter === "active") emptyMessage = "No active tasks right now."
+  }
   return (
     <div className="w-full flex flex-col items-center justify-center mt-8">
       <TaskForm
@@ -67,13 +80,8 @@ const TaskClient = () => {
       />
       <FilterButtons filter={filter} setFilter={setFilter} />
       <div className="min-w-[400px] flex flex-col gap-4 mt-8 border border-gray-200 shadow p-8 rounded-md bg-white">
-        {taskList
-          .filter((task) => {
-            if (filter === "all") return true
-            if (filter === "completed") return task.isComplete
-            if (filter === "active") return !task.isComplete
-          })
-          .map((task) => (
+        {filteredTasks.length > 0 ? (
+          filteredTasks.map((task) => (
             <TaskItem
               key={task.id}
               task={task}
@@ -81,7 +89,10 @@ const TaskClient = () => {
               deleteTask={deleteTask}
               updateTask={updateTask}
             />
-          ))}
+          ))
+        ) : (
+          <p className="text-gray-400 text-center">{emptyMessage}</p>
+        )}
       </div>
     </div>
   )
